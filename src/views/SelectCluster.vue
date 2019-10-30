@@ -51,30 +51,28 @@ export default {
     data: () => ({
         "loading": false,
         "natsAddress": "",
-        "error": null
+        "error": null,
+        "nmon": null
     }), 
     methods: {
         connect(){
-            console.log(process.env.VUE_APP_NATS_PROXY_SERVER)
             this.loading = true
             let natsUrl
             if (process.env.VUE_APP_NATS_PROXY_SERVER.length){
-                natsUrl = `http://127.0.0.1:8181/proxy?url=${this.natsAddress}/streaming`
+                natsUrl = `http://127.0.0.1:8181/proxy?url=${this.natsAddress}`
             } else {
                 natsUrl = this.natsAddress
             }
             axios({
                 method: 'get',
-                url: natsUrl
+                url: `${natsUrl}/streaming`
                 })
-                .then(response => {
-                    console.log(response)
-                    const encAddr = btoa(this.natsAddress)
-                    console.log(encAddr)
-                    this.$router.push(`/cluster/${encAddr}`)
+                .then(() => {
+                    const encoded = btoa(this.natsAddress)
+                    this.$router.push(`/cluster/${encoded}/info`)
                 })
                 .catch(error => {
-                    console.log(error.response)
+                    console.log(error)
                     this.error = 'There was an error connecting to the NATS cluster. Please check the address and try again.'
                 })
                 .finally(() => this.loading = false)

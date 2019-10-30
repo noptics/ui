@@ -4,7 +4,7 @@
       v-model="drawer"
       app>
       <v-list dense>
-        <v-list-item link>
+        <v-list-item link to="info">
           <v-list-item-action>
             <v-icon>dns</v-icon>
           </v-list-item-action>
@@ -12,14 +12,18 @@
             <v-list-item-title>{{cluster}}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item link>
-          <v-list-item-action>
-            <v-icon>mdi-contact-mail</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Contact</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+        <v-list-group
+          prepend-icon="view_day">
+          <template v-slot:activator>
+          <v-list-item-title>Channels</v-list-item-title>
+        </template>
+        </v-list-group>
+        <v-list-group
+          prepend-icon="device_hub">
+          <template v-slot:activator>
+          <v-list-item-title>Clients</v-list-item-title>
+        </template>
+        </v-list-group>
       </v-list>
     </v-navigation-drawer>
 
@@ -32,42 +36,8 @@
     </v-app-bar>
 
     <v-content>
-      <v-container
-        class="fill-height"
-        fluid>
-        <v-row
-          align="center"
-          justify="center">
-          <v-col class="text-center">
-            <v-tooltip left>
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  :href="source"
-                  icon
-                  large
-                  target="_blank"
-                  v-on="on">
-                  <v-icon large>mdi-code-tags</v-icon>
-                </v-btn>
-              </template>
-              <span>Source</span>
-            </v-tooltip>
-
-            <v-tooltip right>
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  icon
-                  large
-                  href="https://codepen.io/johnjleider/pen/zgxeLQ"
-                  target="_blank"
-                  v-on="on">
-                  <v-icon large>mdi-codepen</v-icon>
-                </v-btn>
-              </template>
-              <span>Codepen</span>
-            </v-tooltip>
-          </v-col>
-        </v-row>
+      <v-container fluid>
+          <router-view/>
       </v-container>
     </v-content>
     <v-footer
@@ -79,18 +49,26 @@
 </template>
 
 <script>
-  export default {
-    props: {
-      source: String,
-    },
-    data: () => ({
-      drawer: true,
-    }),
-    computed: {
-        cluster(){
-            const path = this.$router.currentRoute.path.split("/")
-            return atob(path[path.length-1])
-        }
+export default {
+  name: "dashboard",
+  data: () => ({
+    drawer: true
+  }),
+  created(){
+    const path = this.$route.path.split("/")
+    const natsAddress = atob(path[path.findIndex(value => value === "cluster")+1])
+    let natsUrl
+    if (process.env.VUE_APP_NATS_PROXY_SERVER.length){
+        natsUrl = `http://127.0.0.1:8181/proxy?url=${natsAddress}`
+    } else {
+        natsUrl = natsAddress
     }
+    this.$store.commit('cluster', {"root": natsAddress, "url": natsUrl})
+  },
+  computed: {
+      cluster(){
+          return this.$store.getters.prettyClusterName
+      }
   }
+}
 </script>
