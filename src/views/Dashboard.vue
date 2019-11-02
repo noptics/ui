@@ -12,18 +12,22 @@
             <v-list-item-title>{{cluster}}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-group
-          prepend-icon="view_day">
-          <template v-slot:activator>
-          <v-list-item-title>Channels</v-list-item-title>
-        </template>
-        </v-list-group>
-        <v-list-group
-          prepend-icon="device_hub">
-          <template v-slot:activator>
-          <v-list-item-title>Clients</v-list-item-title>
-        </template>
-        </v-list-group>
+        <v-list-item link to="channels">
+          <v-list-item-action>
+            <v-icon>view_day</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Channels</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item link to="clients">
+          <v-list-item-action>
+            <v-icon>device_hub</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Clients</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
@@ -49,10 +53,15 @@
 </template>
 
 <script>
+import nmon from "../natsmonitor/natsmonitor"
+
 export default {
   name: "dashboard",
   data: () => ({
-    drawer: true
+    drawer: true,
+    nmon: new nmon(),
+    channels: [],
+    clients: []
   }),
   created(){
     const path = this.$route.path.split("/")
@@ -64,11 +73,43 @@ export default {
         natsUrl = natsAddress
     }
     this.$store.commit('cluster', {"root": natsAddress, "url": natsUrl})
+    // this.updateChannels()
+    // this.updateClients()
+    this.refreshClusterName()
   },
   computed: {
       cluster(){
           return this.$store.getters.prettyClusterName
       }
+  },
+  methods: {
+    async updateChannels(){
+      try {
+        const reply = await this.nmon.streamingChannels(this.$store.state.url)
+        console.log(reply)
+        this.channels = reply.names
+      } catch (e) {
+        console.log(e)
+      }
+    },
+    async updateClients(){
+      try {
+        const reply = await this.nmon.streamingClients(this.$store.state.url)
+        console.log(reply)
+        this.clients = reply.clients.map((client)=>client.id)
+      } catch (e) {
+        console.log(e)
+      }
+    },
+    async refreshClusterName(){
+      try {
+        const data = await this.nmon.streamingClusterInfo(this.$store.state.url)
+        console.log(data)
+        this.$store.commit('clusterName', data.cluster_id)
+      } catch (e) {
+        console.log(e)
+      }
+    }
   }
 }
 </script>

@@ -1,7 +1,9 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import SelectCluster from "../views/SelectCluster.vue";
-import ClusterInfo from "../components/ClusterInfo.vue"
+import ClusterInfo from "../components/ClusterInfo.vue";
+import ChannelsInfo from "../components/ChannelsInfo.vue";
+import ClientsInfo from "../components/ClientsInfo.vue";
 
 Vue.use(VueRouter);
 
@@ -24,6 +26,16 @@ const routes = [
         path: 'info',
         name: 'info',
         component: ClusterInfo
+      },
+      {
+        path: 'channels',
+        name: 'channels',
+        component: ChannelsInfo
+      },
+      {
+        path: 'clients',
+        name: 'clients',
+        component: ClientsInfo
       }
     ]
   }
