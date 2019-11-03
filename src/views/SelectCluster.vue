@@ -20,7 +20,7 @@
                         <v-text-field
                             label="nats monitoring url (http://127.0.0.1:8222)"
                             name="address"
-                            prepend-icon="dns"
+                            prepend-icon="fa-server"
                             type="text"
                             v-model="natsAddress"
                         ></v-text-field>

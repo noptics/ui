@@ -9,7 +9,7 @@
             <v-icon>dns</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>{{cluster}}</v-list-item-title>
+            <v-list-item-title>{{clusterName}}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item link to="channels">
@@ -64,8 +64,7 @@ export default {
     clients: []
   }),
   created(){
-    const path = this.$route.path.split("/")
-    const natsAddress = atob(path[path.findIndex(value => value === "cluster")+1])
+    const natsAddress = this.clusterDecodedAddress
     let natsUrl
     if (process.env.VUE_APP_NATS_PROXY_SERVER.length){
         natsUrl = `http://127.0.0.1:8181/proxy?url=${natsAddress}`
@@ -78,8 +77,16 @@ export default {
     this.refreshClusterName()
   },
   computed: {
-      cluster(){
-          return this.$store.getters.prettyClusterName
+      clusterName(){
+        return this.$store.getters.prettyClusterName
+      },
+      clusterDecodedAddress(){
+        const path = this.$route.path.split("/")
+        return atob(path[path.findIndex(value => value === "cluster")+1])
+      },
+      clusterEncodedAddress(){
+        const path = this.$route.path.split("/")
+        return path[path.findIndex(value => value === "cluster")+1]
       }
   },
   methods: {

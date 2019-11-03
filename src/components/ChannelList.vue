@@ -1,16 +1,21 @@
 <template>
     <v-container fluid fill-height>
-        <ChannelInfo v-for="(channel, i) in channels" :key="i" :channel="channel"/>
+        <v-row>
+        <ChannelSummary 
+            v-for="(channel, i) in channels"
+            :key="i"
+            :channel="channel" />
+        </v-row>
     </v-container>
 </template>
 
 <script>
 import nmon from "../natsmonitor/natsmonitor"
-import ChannelInfo from "../components/ChannelInfo.vue"
+import ChannelSummary from "../components/ChannelSummary.vue"
 
 export default {
-    name: "channelsInfo",
-    components: {ChannelInfo},
+    name: "channels",
+    components: {ChannelSummary},
     data() {
         return {
             nmon: new nmon(),
