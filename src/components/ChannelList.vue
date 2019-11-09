@@ -10,29 +10,22 @@
 </template>
 
 <script>
-import nmon from "../natsmonitor/natsmonitor"
-import ChannelSummary from "../components/ChannelSummary.vue"
+import ChannelSummary from "@/components/ChannelSummary.vue"
 
 export default {
     name: "channels",
     components: {ChannelSummary},
     data() {
         return {
-            nmon: new nmon(),
-            channels: []
+
         }
     },
     created(){
-        this.updateChannels()
+        this.$store.dispatch('clusterChannels')
     },
-    methods: {
-        async updateChannels(){
-            try {
-                const reply = await this.nmon.streamingChannels(this.$store.state.url, true)
-                this.channels = reply.channels
-            } catch (e) {
-                console.log(e)
-            }
+    computed: {
+        channels() {
+            return this.$store.state.channels
         }
     }
 }

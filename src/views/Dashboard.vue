@@ -4,23 +4,23 @@
       v-model="drawer"
       app>
       <v-list dense>
-        <v-list-item link to="info">
+        <v-list-item :to="{name: 'info'}">
           <v-list-item-action>
-            <v-icon>dns</v-icon>
+            <v-icon>fa-server</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>{{clusterName}}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item link to="channels">
+        <v-list-item :to="{name: 'channellist'}">
           <v-list-item-action>
-            <v-icon>view_day</v-icon>
+            <v-icon>fa-stream</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>Channels</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item link to="clients">
+        <v-list-item :to="{name: 'clients'}">
           <v-list-item-action>
             <v-icon>device_hub</v-icon>
           </v-list-item-action>
@@ -28,6 +28,17 @@
             <v-list-item-title>Clients</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+      
+        <v-divider/>
+        <v-list-item :to="{name: 'registry', params:{cluster: 'clusterId'}}" :cluster="clusterId">
+          <v-list-item-action>
+            <v-icon>fa-layer-group</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Registry</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      
       </v-list>
     </v-navigation-drawer>
 
@@ -53,43 +64,28 @@
 </template>
 
 <script>
-import nmon from "../natsmonitor/natsmonitor"
-
 export default {
   name: "dashboard",
   data: () => ({
     drawer: true,
-    nmon: new nmon(),
     channels: [],
-    clients: []
+    clients: [],
+    clusterId: ""
   }),
   created(){
-    const natsAddress = this.clusterDecodedAddress
-    let natsUrl
-    if (process.env.VUE_APP_NATS_PROXY_SERVER.length){
-        natsUrl = `http://127.0.0.1:8181/proxy?url=${natsAddress}`
-    } else {
-        natsUrl = natsAddress
-    }
-    this.$store.commit('cluster', {"root": natsAddress, "url": natsUrl})
-    // this.updateChannels()
-    // this.updateClients()
-    this.refreshClusterName()
+    this.$store.commit('clusterURL', this.clusterEncodedAddress())
+    this.$store.dispatch('clusterInfo')
   },
   computed: {
       clusterName(){
         return this.$store.getters.prettyClusterName
-      },
-      clusterDecodedAddress(){
-        const path = this.$route.path.split("/")
-        return atob(path[path.findIndex(value => value === "cluster")+1])
-      },
-      clusterEncodedAddress(){
-        const path = this.$route.path.split("/")
-        return path[path.findIndex(value => value === "cluster")+1]
       }
   },
   methods: {
+    clusterEncodedAddress(){
+      const path = this.$route.path.split("/")
+      return path[path.findIndex(value => value === "cluster")+1]
+    },
     async updateChannels(){
       try {
         const reply = await this.nmon.streamingChannels(this.$store.state.url)
@@ -113,6 +109,7 @@ export default {
         const data = await this.nmon.streamingClusterInfo(this.$store.state.url)
         console.log(data)
         this.$store.commit('clusterName', data.cluster_id)
+        this.clusterId = data.cluster_id
       } catch (e) {
         console.log(e)
       }

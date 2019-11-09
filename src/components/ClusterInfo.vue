@@ -19,22 +19,19 @@
 </template>
 
 <script>
-import nmon from "../natsmonitor/natsmonitor"
 export default {
     name: "clusterinfo",
     data: function(){
         return {
-            nmon: new nmon(),
-            info: {},
             loading: false
         }
     },
     created(){
-        this.refreshInfo()
+        this.$store.dispatch('clusterInfo')
     },
     computed: {
-        cluster(){
-            return this.$store.state.root
+        info(){
+            return this.$store.state.cluster
         }
     },
     methods: {

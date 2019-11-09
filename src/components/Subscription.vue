@@ -1,53 +1,44 @@
 <template>
-    <v-card min-width="350">
+    <v-card min-width="350" class="pa-2 ma-4">
         <v-card-text>
-            <v-container>
-                <v-row>
-                    <p v-if="!sub.client_id"></p>
-                    {{ sub.client_id }}
-                </v-row>
-                <v-row>
-                    <v-col>
-                        <v-chip label :color="sub.is_offline ? 'red' : 'green'">
-                            {{sub.is_offline ? "offline" : "online"}}
-                        </v-chip>
-                    </v-col>
-                    <v-col v-if="!sub.is_offline">
-                        <v-chip label :color="sub.is_stalled ? 'red' : 'green'">
-                            {{sub.is_stalled ? "stalled" : "running"}}
-                        </v-chip>
-                    </v-col>
-                    <v-col v-if="sub.is_durable">
-                        <v-chip label>
-                            durable
-                        </v-chip>
-                    </v-col>
-                </v-row>
-                <v-row>
-                    <v-col>
-                        Queue:
-                    </v-col>
-                    <v-col>
-                        {{ sub.queue_name }}
-                    </v-col>
-                </v-row>
-                <v-row>
-                    <v-col>
-                        Last Sent:
-                    </v-col>
-                    <v-col>
-                        {{ sub.last_sent }}
-                    </v-col>
-                </v-row>
-                <v-row>
-                    <v-col>
-                        Pending:
-                    </v-col>
-                    <v-col>
-                        {{ sub.pending_count }}
-                    </v-col>
-                </v-row>
-            </v-container>
+            <div class="d-flex flex-row">
+            {{ sub.client_id }}
+            </div>
+            <div class="d-flex flex-row">
+                <v-chip label :color="sub.is_offline ? 'red' : 'green'" class="ma-3">
+                    {{sub.is_offline ? "offline" : "online"}}
+                </v-chip>
+                <v-chip v-if="!sub.is_offline" label :color="sub.is_stalled ? 'red' : 'green'" class="ma-3">
+                    {{sub.is_stalled ? "stalled" : "running"}}
+                </v-chip>
+                <v-chip label v-if="sub.is_durable" class="ma-3">
+                    durable
+                </v-chip>
+            </div>
+            <div class="d-flex flex-row">
+                <div class="ma-3">
+                    Queue:
+                </div>
+                <div class="ma-3">
+                    {{ sub.queue_name }}
+                </div>
+            </div>
+            <div class="d-flex flex-row">
+                <div class="ma-3">
+                    Last Sent:
+                </div>
+                <div class="ma-3">
+                    {{ sub.last_sent }}
+                </div>
+            </div>
+            <div class="d-flex flex-row">
+                <div class="ma-3">
+                    Pending:
+                </div>
+                <div class="ma-3">
+                    {{ sub.pending_count }}
+                </div>
+            </div>
         </v-card-text>
     </v-card>
 </template>

@@ -1,7 +1,6 @@
 <template>
-<div>
-    <v-container fluid fill-height>
-        <v-row>
+    <div>
+        <div class="d-flex flex-row ma-4">
             <v-card min-width="350">
                 <v-card-title>Channel: {{ this.channelID }}</v-card-title>
                 <v-card-text>
@@ -41,19 +40,18 @@
                     </v-container>
                 </v-card-text>
             </v-card>
-        </v-row>
-    </v-container>
-    <h2>Subscriptions:</h2>
-    <v-container>
-        <v-row>
-            <Subscription v-for="(sub, i) in channel.subscriptions" :key="i" :sub="sub"/>
-        </v-row>
-    </v-container>
         </div>
+        <div class="d-flex flex-row ma-4">
+            <h2>Subscriptions:</h2>
+        </div>
+        <div class="d-flex flex-row flex-wrap">
+            <Subscription v-for="(sub, i) in channel.subscriptions" :key="i" :sub="sub"/>
+        </div>
+    </div>
 </template>
 
 <script>
-import nmon from "@/natsmonitor/natsmonitor"
+import nmon from "@/apis/natsmonitor"
 import Subscription from "@/components/Subscription.vue"
 
 export default {

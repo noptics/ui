@@ -13,17 +13,33 @@
                     </v-alert>
                     <v-card class="elevation-12">
                     <v-toolbar color="primary" dark flat>
-                        <v-toolbar-title>NATS Streaming Cluster</v-toolbar-title>
+                        <v-toolbar-title>Connetc to NATS Streaming Cluster</v-toolbar-title>
                     </v-toolbar>
                     <v-card-text>
-                        <v-form>
+                        <v-form ref="form" v-model="valid">
                         <v-text-field
                             label="nats monitoring url (http://127.0.0.1:8222)"
                             name="address"
                             prepend-icon="fa-server"
                             type="text"
+                            :rules="natsAddressRules"
+                            required
                             v-model="natsAddress"
                         ></v-text-field>
+                        <v-text-field
+                            label="nats proxy url (http://127.0.0.1:8282)"
+                            name="proxy"
+                            prepend-icon="fa-project-diagram"
+                            type="text"
+                            :rules="proxyAddressRules"
+                            v-model="proxyAddress">
+                            <v-tooltip right slot="append">
+                                <template #activator="{ on }">
+                                    <v-icon v-on="on">fa-question-circle</v-icon>
+                                </template>
+                                <span>Required if nats cluster is on a different domain (CORS)</span>
+                            </v-tooltip>
+                        </v-text-field>
                         </v-form>
                     </v-card-text>
                     <v-card-actions>
@@ -31,7 +47,7 @@
                         <v-btn 
                             color="primary"
                             :loading="loading"
-                            :disabled="loading"
+                            :disabled="!valid || loading"
                             v-on:click="connect">Connect</v-btn>
                     </v-card-actions>
                     </v-card>
@@ -50,16 +66,25 @@ export default {
     name: "SelectCluster",
     data: () => ({
         "loading": false,
-        "natsAddress": "",
+        "natsAddress": '',
+        "natsAddressRules": [
+            v => !!v || 'Monitoring address is required',
+            v => /^(?:http(s)?:\/\/)[\w.-]+(?:.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/.test(v) || 'must be a valid url'
+        ],
+        "proxyAddress": "",
+        "proxyAddressRules": [
+            v => /^(?:http(s)?:\/\/)[\w.-]+(?:.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/.test(v) || 'must be a valid url'
+        ],
         "error": null,
-        "nmon": null
+        "nmon": null,
+        "valid": false,
     }), 
     methods: {
         connect(){
             this.loading = true
             let natsUrl
-            if (process.env.VUE_APP_NATS_PROXY_SERVER.length){
-                natsUrl = `http://127.0.0.1:8181/proxy?url=${this.natsAddress}`
+            if (this.proxyAddress.length){
+                natsUrl = `${this.proxyAddress}/proxy?url=${this.natsAddress}`
             } else {
                 natsUrl = this.natsAddress
             }
@@ -67,8 +92,12 @@ export default {
                 method: 'get',
                 url: `${natsUrl}/streaming`
                 })
-                .then(() => {
-                    const encoded = btoa(this.natsAddress)
+                .then(response => {
+                    if (response.status != 200) {
+                        throw response.status
+                    }
+                    const encoded = btoa(natsUrl)
+                    console.log("url", natsUrl, "encoded", encoded)
                     this.$router.push(`/cluster/${encoded}/info`)
                 })
                 .catch(error => {

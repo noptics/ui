@@ -5,7 +5,8 @@ import ClusterInfo from "../components/ClusterInfo.vue";
 import Channels from "../components/Channels.vue";
 import Channel from "../components/Channel.vue";
 import ChannelList from "../components/ChannelList.vue";
-import ClientsInfo from "../components/ClientsInfo.vue";
+import ClientList from "../components/ClientList.vue";
+import Registry from "../components/Registry.vue";
 
 Vue.use(VueRouter);
 
@@ -31,27 +32,32 @@ const routes = [
         },
         {
           path: 'channels',
-          name: 'channels',
+          name: '',
           component: Channels,
           children: [
-            {
-              path: '',
-              name: 'channellist',
-              component: ChannelList,
-            },
             {
               path: ':channelID',
               name: 'channel',
               component: Channel,
               props: true
+            },
+            {
+              path: '',
+              name: 'channellist',
+              component: ChannelList,
             }
-  
           ]
         },
         {
           path: 'clients',
           name: 'clients',
-          component: ClientsInfo
+          component: ClientList
+        },
+        {
+          path: 'registry',
+          name: 'registry',
+          component: Registry,
+          props: true
         }
     ]
   }
