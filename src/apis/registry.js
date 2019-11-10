@@ -13,7 +13,8 @@ class Registry {
             // console.log(response)
             return response.data
         } catch (e){
-            console.log("registry error", e)
+            console.log("registry api error", e)
+            throw e
         }
     }
 
@@ -26,7 +27,21 @@ class Registry {
             console.log(response)
             return response.data
         } catch (e){
-            console.log("registry error", e)
+            console.log("registry api error", e)
+            throw e
+        }
+    }
+
+    async channels(url, cluster) {
+        try{
+            let response = await axios({
+                method: 'get',
+                url: `${url}/${cluster}`
+                });
+            return response.data
+        } catch (e){
+            console.log("registry api error", e)
+            throw e
         }
     }
 }

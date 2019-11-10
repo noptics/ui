@@ -8,12 +8,12 @@
                     xs12
                     sm8
                     md4>
-                    <v-alert type="error" :value="error">
+                    <v-alert type="error" :value="(error.length > 0)">
                     {{error}}
                     </v-alert>
                     <v-card class="elevation-12">
                     <v-toolbar color="primary" dark flat>
-                        <v-toolbar-title>Connetc to NATS Streaming Cluster</v-toolbar-title>
+                        <v-toolbar-title>Connect to NATS Streaming Cluster</v-toolbar-title>
                     </v-toolbar>
                     <v-card-text>
                         <v-form ref="form" v-model="valid">
@@ -75,13 +75,14 @@ export default {
         "proxyAddressRules": [
             v => /^(?:http(s)?:\/\/)[\w.-]+(?:.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/.test(v) || 'must be a valid url'
         ],
-        "error": null,
+        "error": '',
         "nmon": null,
         "valid": false,
     }), 
     methods: {
         connect(){
             this.loading = true
+            this.error = ''
             let natsUrl
             if (this.proxyAddress.length){
                 natsUrl = `${this.proxyAddress}/proxy?url=${this.natsAddress}`

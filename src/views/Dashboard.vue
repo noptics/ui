@@ -47,7 +47,7 @@
       color="indigo"
       dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title>Noptics</v-toolbar-title>
+      <v-toolbar-title>nOptics</v-toolbar-title>
     </v-app-bar>
 
     <v-content>

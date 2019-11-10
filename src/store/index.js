@@ -1,9 +1,9 @@
 import Vue from "vue";
 import Vuex from "vuex";
-// import registry from "@/apis/registry"
+import registry from "@/apis/registry"
 import natsmonitor from "@/apis/natsmonitor"
 
-// const reg = new registry()
+const reg = new registry()
 const nmon = new natsmonitor()
 
 
@@ -14,7 +14,9 @@ export default new Vuex.Store({
     cluster: {},
     channels: [],
     clients: [],
-    registry: "",
+    registryUrl: "",
+    registry: {},
+    registryChannels: []
 
   },
   mutations: {
@@ -30,8 +32,24 @@ export default new Vuex.Store({
     clusterClients(state, data) {
       state.clients = data
     },
-    registry(state, registry){
-      state.registry = registry
+    registryURL(state, address){
+      console.log(address)
+      state.registryUrl = address
+    },
+    registryData(state, data){
+      state.registry = data
+    },
+    registryChannelData(state, payload) {
+      const index = state.registryChannels.findIndex(item => {
+        return payload.channel === item.channel
+      })
+      if (index !== -1) {
+        console.log("set index", index)
+        state.registryChannels[index] = payload
+      } else {
+        console.log("push channel")
+        state.registryChannels.push(payload)
+      }
     }
   },
   getters: {
@@ -75,6 +93,48 @@ export default new Vuex.Store({
       } catch (e) {
           console.log(e)
       }
+    },
+    async registryInfo({ commit, state, dispatch }){
+      if (state.registryUrl == 0){
+        console.log("url and registry must be set first")
+        return
+      }
+      try {
+          const reply = await reg.status(state.registryUrl)
+          console.log(reply)
+          commit('registryData', reply)
+      } catch (e) {
+          console.log('registry error', e)
+      }
+      dispatch('registryChannels')
+    },
+    async registryChannels({ state, commit }){
+      if (state.registryUrl == 0){
+        console.log("url and registry must be set first")
+        return
+      }
+      
+      let channels
+      try {
+        const reply = await reg.channels(state.registryUrl, state.cluster.cluster_id)
+        console.log(reply)
+        channels = reply
+      } catch (e) {
+        console.log('registry error', e)
+        return
+      }
+
+      channels.forEach(async channel => {
+        try{
+          const data = await reg.channelData(state.registryUrl, state.cluster.cluster_id, channel)
+          console.log(data)
+          
+          commit('registryChannelData', data)
+
+        } catch (e) {
+          console.log("error getting channel data", e)
+        }
+      })
     }
   },
   modules: {}

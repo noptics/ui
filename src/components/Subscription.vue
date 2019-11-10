@@ -1,9 +1,7 @@
 <template>
     <v-card min-width="350" class="pa-2 ma-4">
+        <v-card-title>{{ sub.client_id }}</v-card-title>
         <v-card-text>
-            <div class="d-flex flex-row">
-            {{ sub.client_id }}
-            </div>
             <div class="d-flex flex-row">
                 <v-chip label :color="sub.is_offline ? 'red' : 'green'" class="ma-3">
                     {{sub.is_offline ? "offline" : "online"}}
