@@ -1,6 +1,8 @@
 <template>
     <v-card min-width="350" class="pa-2 ma-4">
-        <v-card-title>{{ channel.channel }}</v-card-title>
+        <v-card-title>
+            {{ channel.channel }}
+        </v-card-title>
         <v-card-text>
             <div class="d-flex flex-row">
                 <div class="ma-3">
@@ -24,14 +26,19 @@
                 </v-list-item>
             </v-list>
         </v-card-text>
+        <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn small v-if="modify">Edit</v-btn>
+            <v-btn small v-if="modify">Delete</v-btn>
+            <v-btn small v-if="view">View Messages</v-btn>
+        </v-card-actions>
     </v-card>
-    
 </template>
 
 <script>
 export default {
     name: "registryChannel",
-    props: ["channel"],
+    props: ["channel", "modify", "view"],
     data(){
         return {
         }

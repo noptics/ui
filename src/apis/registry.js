@@ -24,7 +24,7 @@ class Registry {
                 method: 'get',
                 url: `${url}/${cluster}/${channel}`
                 });
-            console.log(response)
+            // console.log(response)
             return response.data
         } catch (e){
             console.log("registry api error", e)
@@ -42,6 +42,24 @@ class Registry {
         } catch (e){
             console.log("registry api error", e)
             throw e
+        }
+    }
+
+    async saveChannelData(url, cluster, channel, message, files){
+        try {
+            let response = await axios({
+                method: 'post',
+                url: `${url}/${cluster}/${channel}`,
+                data: {
+                    files: files,
+                    message: message
+                }
+            })
+            console.log(response)
+            return response.data
+        } catch (e) {
+            console.log("registry api error", e)
+             throw e
         }
     }
 }

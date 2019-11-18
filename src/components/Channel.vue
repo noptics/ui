@@ -40,6 +40,9 @@
                     </v-container>
                 </v-card-text>
             </v-card>
+            <div >
+                
+            </div>
         </div>
         <div class="d-flex flex-row ma-4">
             <h2>Subscriptions:</h2>
@@ -47,12 +50,19 @@
         <div class="d-flex flex-row flex-wrap">
             <Subscription v-for="(sub, i) in channel.subscriptions" :key="i" :sub="sub"/>
         </div>
+        <div class="d-flex flex-row ma-4" v-if="regsitryChannel">
+            <h2>Registry:</h2>
+        </div>
+        <div class="d-flex flex-row" v-if="regsitryChannel">
+            <RegistryChannel :view="true" :channel="regsitryChannel"></RegistryChannel>
+        </div>
     </div>
 </template>
 
 <script>
 import nmon from "@/apis/natsmonitor"
 import Subscription from "@/components/Subscription.vue"
+import RegistryChannel from "@/components/RegistryChannel.vue"
 
 export default {
     name: "channel",
@@ -63,7 +73,7 @@ export default {
             channel: {}
         }
     },
-    components: {Subscription},
+    components: {Subscription, RegistryChannel},
     created(){
         this.refreshInfo()
     },
@@ -79,7 +89,13 @@ export default {
         },
         lastSeq(){
             return this.channel.last_seq ? this.channel.last_seq : 0
+        },
+        regsitryChannel(){
+            const channel = this.$store.getters.registryChannel(this.channelID)
+            console.log(channel)
+            return channel 
         }
+        
     },
     methods: {
         async refreshInfo(){
