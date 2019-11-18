@@ -55,6 +55,11 @@ export default new Vuex.Store({
   getters: {
     prettyClusterName: state => {
       return state.cluster.cluster_id ? state.cluster.cluster_id : state.url
+    },
+    registryChannel: state => name => {
+      console.log("registry channel gettero for ", name)
+      console.log(state.registryChannels)
+      return state.registryChannels.find(channel => { return channel.channel === name})
     }
   },
   actions: {
@@ -127,7 +132,6 @@ export default new Vuex.Store({
       channels.forEach(async channel => {
         try{
           const data = await reg.channelData(state.registryUrl, state.cluster.cluster_id, channel)
-          console.log(data)
           
           commit('registryChannelData', data)
 
@@ -135,6 +139,17 @@ export default new Vuex.Store({
           console.log("error getting channel data", e)
         }
       })
+    },
+    async channelFiles({dispatch, state}, payload) {
+      console.log(payload)
+      const data = await reg.saveChannelData(
+        state.registryUrl,
+        state.cluster.cluster_id,
+        payload.channel,
+        payload.message,
+        payload.files)
+      console.log(data)
+      dispatch('registryChannels')
     }
   },
   modules: {}

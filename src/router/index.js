@@ -1,12 +1,14 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import SelectCluster from "../views/SelectCluster.vue";
-import ClusterInfo from "../components/ClusterInfo.vue";
-import Channels from "../components/Channels.vue";
-import Channel from "../components/Channel.vue";
-import ChannelList from "../components/ChannelList.vue";
-import ClientList from "../components/ClientList.vue";
-import Registry from "../components/Registry.vue";
+import SelectCluster from "@/views/SelectCluster.vue";
+import ClusterInfo from "@/components/ClusterInfo.vue";
+import Channels from "@/components/Channels.vue";
+import Channel from "@/components/Channel.vue";
+import ChannelList from "@/components/ChannelList.vue";
+import ClientList from "@/components/ClientList.vue";
+import Registry from "@/components/Registry.vue";
+import Streamer from "@/components/Streamer.vue";
+import StreamerDash from "@/components/StreamerDash.vue";
 
 Vue.use(VueRouter);
 
@@ -58,6 +60,23 @@ const routes = [
           name: 'registry',
           component: Registry,
           props: true
+        },
+        {
+          path: 'streamer',
+          name: '',
+          component: Streamer,
+          children: [
+            {
+              path: ':channelID',
+              name: 'streamerdata',
+              component: StreamerDash,
+            },
+            {
+              path: '',
+              name: 'streamerdash',
+              component: StreamerDash,
+            }
+          ]
         }
     ]
   }
