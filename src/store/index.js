@@ -2,10 +2,17 @@ import Vue from "vue";
 import Vuex from "vuex";
 import registry from "@/apis/registry"
 import natsmonitor from "@/apis/natsmonitor"
+import streamer from "@/apis/streamer"
+import VuexPersistence from 'vuex-persist'
+
+const vuexLocal = new VuexPersistence({
+  storage: window.localStorage,
+  key: 'noptics'
+})
 
 const reg = new registry()
 const nmon = new natsmonitor()
-
+const stream = new streamer()
 
 Vue.use(Vuex);
 export default new Vuex.Store({
@@ -16,8 +23,9 @@ export default new Vuex.Store({
     clients: [],
     registryUrl: "",
     registry: {},
-    registryChannels: []
-
+    registryChannels: [],
+    streamerURL: "",
+    streamer: {}
   },
   mutations: {
     clusterURL (state, address){
@@ -33,7 +41,6 @@ export default new Vuex.Store({
       state.clients = data
     },
     registryURL(state, address){
-      console.log(address)
       state.registryUrl = address
     },
     registryData(state, data){
@@ -50,6 +57,12 @@ export default new Vuex.Store({
         console.log("push channel")
         state.registryChannels.push(payload)
       }
+    },
+    streamerURL(state, address){
+      state.streamerURL = address
+    },
+    streamerData(state, data) {
+      state.streamer = data
     }
   },
   getters: {
@@ -150,9 +163,23 @@ export default new Vuex.Store({
         payload.files)
       console.log(data)
       dispatch('registryChannels')
-    }
+    },
+    async streamerInfo({ commit, state }){
+      if (state.streamerURL == 0){
+        console.log("streamer url must be set first")
+        return
+      }
+      try {
+          const reply = await stream.status(state.streamerURL)
+          console.log(reply)
+          commit('streamerData', reply)
+      } catch (e) {
+          console.log('streamer error', e)
+      }
+    },
   },
-  modules: {}
+  modules: {},
+  plugins: [vuexLocal.plugin]
 });
 
 function decodeClusterAddress(address) {

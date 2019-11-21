@@ -38,7 +38,7 @@
             <v-list-item-title>Registry</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item :to="{name: 'streamer'}" :cluster="clusterId">
+        <v-list-item :to="{name: 'streamerdash'}" :cluster="clusterId">
           <v-list-item-action>
             <v-icon>fa-angle-double-right</v-icon>
           </v-list-item-action>
