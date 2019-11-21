@@ -136,7 +136,6 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
-                
             </div>
             <div class="d-flex flex-row flex-wrap">
                 <RegistryChannel v-for="(chan, i) in channels" :key="i" :channel="chan"/>

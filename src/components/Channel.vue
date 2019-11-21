@@ -54,7 +54,7 @@
             <h2>Registry:</h2>
         </div>
         <div class="d-flex flex-row" v-if="regsitryChannel">
-            <RegistryChannel :view="true" :channel="regsitryChannel"></RegistryChannel>
+            <RegistryChannel :view="streamer" :channel="regsitryChannel"></RegistryChannel>
         </div>
     </div>
 </template>
@@ -94,6 +94,9 @@ export default {
             const channel = this.$store.getters.registryChannel(this.channelID)
             console.log(channel)
             return channel 
+        },
+        streamer(){
+            return this.$store.state.streamerURL ? true : false
         }
         
     },
