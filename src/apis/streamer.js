@@ -3,13 +3,14 @@ import axios from 'axios'
 class Streamer{
   constructor(){}
   
-  async status(url){
+  async status(url, natsAddress, clusterID){
     try{
         let response = await axios({
             method: 'get',
-            url: `${url}`
+            url: `${url}`,
+            params: {'natsAddress': natsAddress, "stanCluster": clusterID}
             });
-        // console.log(response)
+        console.log(response)
         return response.data
     } catch (e){
         console.log("registry api error", e)

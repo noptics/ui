@@ -17,6 +17,9 @@ const stream = new streamer()
 Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
+    proxyURL: "",
+    natsURL: "",
+    monitoringURL: "",
     url: "",
     cluster: {},
     channels: [],
@@ -25,6 +28,7 @@ export default new Vuex.Store({
     registry: {},
     registryChannels: [],
     streamerURL: "",
+    streamerNatsURL: "",
     streamer: {}
   },
   mutations: {
@@ -58,8 +62,14 @@ export default new Vuex.Store({
         state.registryChannels.push(payload)
       }
     },
+    clearReigstryChannelData(state) {
+      state.registryChannels = []
+    },
     streamerURL(state, address){
       state.streamerURL = address
+    },
+    streamerNatsURL(state, address){
+      state.streamerNatsURL = address
     },
     streamerData(state, data) {
       state.streamer = data
@@ -70,7 +80,7 @@ export default new Vuex.Store({
       return state.cluster.cluster_id ? state.cluster.cluster_id : state.url
     },
     registryChannel: state => name => {
-      console.log("registry channel gettero for ", name)
+      console.log("registry channel getter for ", name)
       console.log(state.registryChannels)
       return state.registryChannels.find(channel => { return channel.channel === name})
     }
@@ -123,6 +133,8 @@ export default new Vuex.Store({
           commit('registryData', reply)
       } catch (e) {
           console.log('registry error', e)
+          commit('clearReigstryChannelData')
+          commit('registryURL', '')
       }
       dispatch('registryChannels')
     },
@@ -170,11 +182,13 @@ export default new Vuex.Store({
         return
       }
       try {
-          const reply = await stream.status(state.streamerURL)
+          const reply = await stream.status(state.streamerURL, state.streamerNatsURL, state.cluster.cluster_id)
           console.log(reply)
           commit('streamerData', reply)
       } catch (e) {
           console.log('streamer error', e)
+          commit('streamerURL', '')
+          commit('streamerNatsURL', '')
       }
     },
   },

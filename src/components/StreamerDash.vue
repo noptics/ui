@@ -13,11 +13,20 @@
                   <v-text-field
                       label="streamer url (http://127.0.0.1:7786)"
                       name="streamer"
-                      prepend-icon="fa-server"
+                      prepend-icon="fa-angle-double-right"
                       type="text"
                       :rules="streamerRules"
                       required
                       v-model="streamerInput"
+                  ></v-text-field>
+                  <v-text-field
+                      label="nats url (nats://127.0.0.1:4222)"
+                      name="natsAddress"
+                      prepend-icon="fa-server"
+                      type="text"
+                      :rules="natsRules"
+                      required
+                      v-model="streamerNatsInput"
                   ></v-text-field>
               </v-form>
           </v-card-text>
@@ -76,12 +85,21 @@ export default {
       loading: false,
       valid: false,
       streamerInput: '',
+      streamerNatsInput: '',
+      natsURLInput: '',
       streamerRules: [
           v => !!v || 'streamer address is required',
           v => /^(?:http(s)?:\/\/)[\w.-]+(?:.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/.test(v) || 'must be a valid url'
       ],
+      natsRules: [
+          v => !!v || 'nats address is required',
+          v => /^(?:nats?:\/\/)[\w.-]+(?:.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/.test(v) || 'must be a valid url'
+      ],
       error: '',
     }
+  },
+  created() {
+    this.$store.dispatch('streamerInfo')
   },
   computed: {
     streamerURL() {
@@ -104,6 +122,7 @@ export default {
               throw response.status
           }
           this.$store.commit('streamerURL', this.streamerInput)
+          this.$store.commit('streamerNatsURL', this.streamerNatsInput)
           this.$store.dispatch('streamerInfo')
       })
       .catch(error => {

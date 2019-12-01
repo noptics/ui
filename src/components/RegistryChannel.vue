@@ -78,7 +78,8 @@ export default {
             this.loadingMesage = "connecting..."
             const streamerWSAddress = this.$store.state.streamerURL.replace(/(^\w+:|^)\/\//, 'ws://')
             console.log(`${streamerWSAddress}/${this.$store.state.cluster.cluster_id}/${this.channel.channel}`)
-            this.socket = new WebSocket(`${streamerWSAddress}/${this.$store.state.cluster.cluster_id}/${this.channel.channel}`)
+            this.socket = new WebSocket(
+                `${streamerWSAddress}/${this.$store.state.cluster.cluster_id}/${this.channel.channel}?natsAddress=${this.$store.state.streamerNatsURL}&stanCluster=${this.$store.state.cluster.cluster_id}`)
             this.socket.onerror = (e) => {
                 console.log("socket error", e)
                 this.loadingMesage = `Error connecting to streamer ${e}`
