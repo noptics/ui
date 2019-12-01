@@ -143,6 +143,8 @@ export default new Vuex.Store({
         console.log("url and registry must be set first")
         return
       }
+
+      commit('clearReigstryChannelData')
       
       let channels
       try {
