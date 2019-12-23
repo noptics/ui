@@ -31,7 +31,7 @@
                 <v-spacer></v-spacer>
                 <v-btn small v-if="modify">Edit</v-btn>
                 <v-btn small v-if="modify">Delete</v-btn>
-                <v-btn small v-if="view" @click="openWatch()">Watch</v-btn>
+                <v-btn small v-if="view" @click="openWatch()">Peek</v-btn>
             </v-card-actions>
         </v-card>
         <v-dialog v-model="watchDialog" max-width="1000px">
@@ -77,9 +77,9 @@ export default {
         async streamerConnect(){  
             this.loadingMesage = "connecting..."
             const streamerWSAddress = this.$store.state.streamerURL.replace(/(^\w+:|^)\/\//, 'ws://')
-            console.log(`${streamerWSAddress}/${this.$store.state.cluster.cluster_id}/${this.channel.channel}`)
+            console.log(`${streamerWSAddress}/${this.$store.state.cluster.cluster_id}/${this.channel.channel}/stream`)
             this.socket = new WebSocket(
-                `${streamerWSAddress}/${this.$store.state.cluster.cluster_id}/${this.channel.channel}?natsAddress=${this.$store.state.streamerNatsURL}&stanCluster=${this.$store.state.cluster.cluster_id}`)
+                `${streamerWSAddress}/${this.$store.state.cluster.cluster_id}/${this.channel.channel}/stream?natsAddress=${this.$store.state.streamerNatsURL}&stanCluster=${this.$store.state.cluster.cluster_id}`)
             this.socket.onerror = (e) => {
                 console.log("socket error", e)
                 this.loadingMesage = `Error connecting to streamer ${e}`
